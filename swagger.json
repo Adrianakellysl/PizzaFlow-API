@@ -1,0 +1,678 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PizzaFlow API",
+    "version": "1.0.0",
+    "description": "PizzaFlow e uma API REST desenvolvida para simular o fluxo de pedidos de uma pizzaria. O sistema oferece funcionalidades de autenticacao de usuarios e gerenciamento de pedidos, utilizando armazenamento em memoria para simplificar a implementacao e facilitar testes automatizados."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Autenticacao"
+    },
+    {
+      "name": "Pedidos"
+    },
+    {
+      "name": "Documentacao"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Health check da API",
+        "responses": {
+          "200": {
+            "description": "API online",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "mensagem",
+                    "sistema",
+                    "versao",
+                    "ambiente",
+                    "timestamp"
+                  ],
+                  "properties": {
+                    "mensagem": {
+                      "type": "string",
+                      "example": "PizzaFlow API online."
+                    },
+                    "sistema": {
+                      "type": "string",
+                      "example": "PizzaFlow API"
+                    },
+                    "versao": {
+                      "type": "string",
+                      "example": "1.0.0"
+                    },
+                    "ambiente": {
+                      "type": "string",
+                      "example": "development"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2026-04-27T12:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/docs/swagger.json": {
+      "get": {
+        "tags": [
+          "Documentacao"
+        ],
+        "summary": "Retorna especificacao OpenAPI em JSON",
+        "responses": {
+          "200": {
+            "description": "Arquivo de documentacao da API"
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": [
+          "Autenticacao"
+        ],
+        "summary": "Realiza login e retorna token JWT",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginSuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pedidos": {
+      "post": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Cria um novo pedido",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CriarPedidoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pedido criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados invalidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou invalido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Lista todos os pedidos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de pedidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Pedido"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou invalido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pedidos/{id}": {
+      "put": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Edita um pedido existente (não permite editar pedido entregue)",
+        "description": "Pedidos podem ser editados enquanto não estiverem com status 'entregue'. O total é recalculado a partir do cardápio.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AtualizarPedidoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pedido atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos ou pedido entregue",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou invalido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pedido nao encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Busca pedido por ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID invalido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou invalido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pedido nao encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Exclui um pedido por ID (apenas status recebido)",
+        "description": "Somente pedidos com status 'recebido' podem ser excluídos. Pedidos em status 'preparando', 'pronto' ou 'entregue' retornam erro.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Pedido excluido com sucesso"
+          },
+          "400": {
+            "description": "ID inválido ou pedido não pode ser excluído. Somente pedidos com status 'recebido' podem ser excluídos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou invalido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pedido nao encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pedidos/{id}/status": {
+      "patch": {
+        "tags": [
+          "Pedidos"
+        ],
+        "summary": "Atualiza status do pedido para a proxima etapa valida",
+        "description": "Só é permitida a transição para a próxima etapa: recebido -> preparando -> pronto -> entregue. Não é permitido pular ou voltar etapas, nem alterar pedido já entregue.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AtualizarStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos ou transição de status inválida. Não é permitido pular, voltar etapas ou alterar pedido entregue.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente ou invalido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pedido nao encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "senha"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin@pizzaria.com"
+          },
+          "senha": {
+            "type": "string",
+            "example": "123456"
+          }
+        }
+      },
+      "LoginSuccessResponse": {
+        "type": "object",
+        "properties": {
+          "mensagem": {
+            "type": "string",
+            "example": "Login realizado com sucesso."
+          },
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      },
+      "CriarPedidoRequest": {
+        "type": "object",
+        "required": [
+          "cliente",
+          "itens"
+        ],
+        "properties": {
+          "cliente": {
+            "type": "string",
+            "example": "Maria Oliveira"
+          },
+          "itens": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/ItemPedidoInput"
+            }
+          }
+        }
+      },
+      "AtualizarPedidoRequest": {
+        "type": "object",
+        "required": [
+          "cliente",
+          "itens"
+        ],
+        "properties": {
+          "cliente": {
+            "type": "string",
+            "example": "Maria Oliveira Atualizada"
+          },
+          "itens": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/ItemPedidoInput"
+            }
+          }
+        }
+      },
+      "ItemPedidoInput": {
+        "type": "object",
+        "required": [
+          "nome",
+          "quantidade"
+        ],
+        "properties": {
+          "nome": {
+            "type": "string",
+            "example": "Pizza Calabresa"
+          },
+          "quantidade": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 2
+          }
+        }
+      },
+      "AtualizarStatusRequest": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "recebido",
+              "preparando",
+              "pronto",
+              "entregue"
+            ],
+            "example": "preparando"
+          }
+        }
+      },
+      "ItemPedidoDetalhe": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "example": "Pizza Calabresa"
+          },
+          "quantidade": {
+            "type": "integer",
+            "example": 2
+          },
+          "precoUnitario": {
+            "type": "number",
+            "example": 45
+          },
+          "subtotal": {
+            "type": "number",
+            "example": 90
+          }
+        }
+      },
+      "Pedido": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "cliente": {
+            "type": "string",
+            "example": "Maria Oliveira"
+          },
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItemPedidoDetalhe"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 98
+          },
+          "status": {
+            "type": "string",
+            "example": "recebido"
+          },
+          "criadoEm": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-27T12:00:00.000Z"
+          },
+          "atualizadoEm": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-04-27T12:10:00.000Z"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "erro": {
+            "type": "string",
+            "example": "Token invalido ou expirado."
+          }
+        }
+      }
+    }
+  }
+}
