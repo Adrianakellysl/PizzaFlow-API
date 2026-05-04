@@ -1,6 +1,6 @@
 # PizzaFlow API
 
-PizzaFlow e uma API REST desenvolvida para simular o fluxo de pedidos de uma pizzaria. O sistema oferece funcionalidades de autenticacao de usuarios e gerenciamento de pedidos, utilizando armazenamento em memoria para simplificar a implementacao e facilitar testes automatizados.
+PizzaFlow é uma API REST desenvolvida para simular o fluxo de pedidos de uma pizzaria. O sistema oferece funcionalidades de autenticação de usuários e gerenciamento de pedidos, utilizando armazenamento em memória para simplificar a implementação e facilitar testes automatizados.
 
 ## Tecnologias
 
@@ -8,8 +8,10 @@ PizzaFlow e uma API REST desenvolvida para simular o fluxo de pedidos de uma piz
 - Express
 - JSON Web Token (`jsonwebtoken`)
 - Dotenv (`dotenv`)
+- Mocha
+- Chai
 
-## O que há de novo
+## Novidades do projeto
 
 - Suporte a variáveis de ambiente via arquivo `.env`
 - `JWT_SECRET` e `PORT` agora podem ser configurados sem alterar o código
@@ -42,7 +44,7 @@ swagger.json
 
 ## Como executar
 
-1. Instale as dependencias:
+1. Instale as dependências:
 
 ```bash
 npm install
@@ -70,7 +72,7 @@ NODE_ENV=development
 npm start
 ```
 
-5. A API estará disponivel em:
+5. A API estará disponível em:
 
 ```text
 http://localhost:3000
@@ -80,11 +82,11 @@ http://localhost:3000
 
 - `PORT` - porta em que o servidor escuta (padrão: `3000`)
 - `JWT_SECRET` - segredo usado para assinar tokens JWT
-- `NODE_ENV` - ambiente da aplicacao (padrão: `development`)
+- `NODE_ENV` - ambiente da aplicação (padrão: `development`)
 
-## Usuario mock para login
+## Usuário mock para login
 
-Use este usuario no endpoint de autenticação:
+Use este usuário no endpoint de autenticação:
 
 ```json
 {
@@ -130,6 +132,22 @@ Resposta 200:
 {
   "mensagem": "Login realizado com sucesso.",
   "token": "JWT_AQUI"
+}
+```
+
+Resposta 400 (Campos ausentes):
+
+```json
+{
+  "erro": "Email e senha sao obrigatorios."
+}
+```
+
+Resposta 401 (Credenciais inválidas):
+
+```json
+{
+  "erro": "Email ou senha invalidos."
 }
 ```
 
@@ -236,8 +254,8 @@ Regras de exclusão:
 
 Resposta:
 
-- `204` quando excluido com sucesso
-- `404` quando pedido nao existe
+- `204` quando excluído com sucesso
+- `404` quando pedido não existe
 
 ### 6) Buscar pedido por ID
 
@@ -249,7 +267,7 @@ Resposta:
 - `GET /api/pedidos`
 - Requer header: `Authorization: Bearer <token>`
 
-## Cardapio fixo (exemplos)
+## Cardápio fixo (exemplos)
 
 - Pizza Calabresa: 45
 - Pizza Mussarela: 40
@@ -260,24 +278,24 @@ Resposta:
 - Pizza Pepperoni: 54
 - Refrigerante: 8
 - Suco Natural: 10
-- Agua: 5
+- Água: 5
 
 ## Swagger (OpenAPI)
 
-O arquivo de documentacao OpenAPI esta em:
+O arquivo de documentação OpenAPI está em:
 
 - `swagger.json`
 
-Tambem esta disponivel em runtime:
+Também está disponível em runtime:
 
 - `GET /api/docs/swagger.json`
 
-Para visualizar em interface grafica:
+Para visualizar em interface gráfica:
 
 1. Abra [Swagger Editor](https://editor.swagger.io/)
-2. Copie o conteudo de `swagger.json` ou importe a URL local
+2. Copie o conteúdo de `swagger.json` ou importe a URL local
 
-## Observacoes
+## Observações
 
-- Como os dados ficam em memoria, ao reiniciar o servidor os pedidos sao perdidos.
-- O segredo JWT usa `JWT_SECRET` por variavel de ambiente (com fallback local para estudo).
+- Como os dados ficam em memória, ao reiniciar o servidor os pedidos são perdidos.
+- O segredo JWT usa `JWT_SECRET` por variável de ambiente (com fallback local para estudo).
