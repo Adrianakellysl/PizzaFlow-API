@@ -17,7 +17,7 @@ function validarLogin(email, senha) {
     return {
       sucesso: false,
       erro: "Email ou senha invalidos.",
-      status: 400,
+      status: 401,
     };
   }
 

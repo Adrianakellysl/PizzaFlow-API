@@ -1,5 +1,5 @@
-function validarBody(req, res, mensagem = "Body nao enviado.") {
-  if (!req.body) {
+function validarBody(req, res, mensagem = "Body não enviado.") {
+  if (!req.body || Object.keys(req.body).length === 0) {
     res.status(400).json({ erro: mensagem });
     return false;
   }

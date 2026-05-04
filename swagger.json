@@ -111,7 +111,17 @@
             }
           },
           "400": {
-            "description": "Dados invalidos",
+            "description": "Dados invalidos (campos obrigatorios ausentes)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais invalidas",
             "content": {
               "application/json": {
                 "schema": {

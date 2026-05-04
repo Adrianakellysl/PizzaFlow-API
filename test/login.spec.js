@@ -36,13 +36,13 @@ describe("BDD - Autenticacao na API", () => {
     expect(resposta.body.erro).to.equal("Email e senha sao obrigatorios.");
   });
 
-  it("CT-LOGIN-004: deve retornar 400 quando credenciais forem invalidas", async () => {
+  it("CT-LOGIN-004: deve retornar 401 quando credenciais forem invalidas", async () => {
     const resposta = await request(app).post("/api/login").send({
       email: "admin@pizzaria.com",
       senha: "senha_errada",
     });
 
-    expect(resposta.status).to.equal(400);
+    expect(resposta.status).to.equal(401);
     expect(resposta.body).to.have.property("erro").that.is.a("string").and.not.empty;
     expect(resposta.body.erro).to.equal("Email ou senha invalidos.");
   });

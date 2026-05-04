@@ -90,7 +90,7 @@ describe("BDD - Orders", () => {
 
       expect(resposta.status).to.equal(400);
       expect(resposta.body).to.have.property("erro").that.is.a("string").and.not.empty;
-      expect(resposta.body.erro).to.include("Body nao enviado");
+      expect(resposta.body.erro).to.equal("Body não enviado.");
     });
   });
 

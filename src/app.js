@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
 const routes = require("./routes");
 const swaggerDocument = require("../swagger.json");
 const packageInfo = require("../package.json");
@@ -8,7 +9,18 @@ const packageInfo = require("../package.json");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+// Habilita CORS para permitir requisições de outras origens (ex: editor.swagger.io)
+app.use(cors());
+
+// Força o parsing de JSON mesmo se o Postman enviar como texto puro sem Header
+app.use(express.json({ type: '*/*' }));
+
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    return res.status(400).json({ erro: "JSON malformado ou invalido." });
+  }
+  next();
+});
 
 app.use("/api", routes);
 
