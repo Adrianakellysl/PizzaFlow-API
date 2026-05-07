@@ -18,23 +18,43 @@ qualidade de software (QA), validações robustas e testes automatizados.
 ```text
 src/
   app.js
-  routes/
-    index.js
-    authRoutes.js
-    pedidoRoutes.js
+  config/
+    database.js
   controllers/
     authController.js
     pedidoController.js
-  services/
-    authService.js
-    pedidoService.js
-  middlewares/
-    authMiddleware.js
   data/
     cardapio.js
     pedidos.js
     statusPedido.js
     usuario.js
+  helpers/
+  middlewares/
+    authMiddleware.js
+  models/
+  routes/
+    index.js
+    authRoutes.js
+    pedidoRoutes.js
+  services/
+    authService.js
+    pedidoService.js
+test/
+  auth.spec.js
+  login.spec.js
+  orders.spec.js
+  pedidos.spec.js
+  status.spec.js
+  setup.js
+mochawesome-report/
+  assets/
+  mochawesome.html
+  mochawesome.json
+.env
+.gitignore
+package.json
+package-lock.json
+README.md
 swagger.json
 ```
 
