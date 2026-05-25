@@ -248,7 +248,7 @@ Body:
 
 Regras de edição:
 
-- pedido pode ser editado em qualquer status, exceto `entregue`
+- pedido pode ser editado apenas no status `recebido`
 - o `total` é sempre recalculado a partir do cardápio
 - o preço enviado no payload é ignorado
 
