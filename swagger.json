@@ -229,8 +229,8 @@
         "tags": [
           "Pedidos"
         ],
-        "summary": "Edita um pedido existente (não permite editar pedido entregue)",
-        "description": "Pedidos podem ser editados enquanto não estiverem com status 'entregue'. O total é recalculado a partir do cardápio.",
+        "summary": "Edita um pedido existente (apenas status recebido)",
+        "description": "Pedidos só podem ser editados quando estiverem com status 'recebido'. Pedidos com status 'preparando', 'pronto' ou 'entregue' retornam 400 com a mensagem: Pedido só pode ser alterado quando estiver com status 'recebido'. A regra de status é validada antes das regras de payload e antes de qualquer alteração no pedido. O total é recalculado a partir do cardápio.",
         "security": [
           {
             "bearerAuth": []
@@ -269,7 +269,7 @@
             }
           },
           "400": {
-            "description": "Dados inválidos ou pedido entregue",
+            "description": "Dados inválidos ou pedido não está com status 'recebido'",
             "content": {
               "application/json": {
                 "schema": {

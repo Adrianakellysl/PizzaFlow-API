@@ -87,8 +87,12 @@ function atualizarPedido(id, cliente, itens) {
     return { sucesso: false, status: 404, erro: "Pedido nao encontrado." };
   }
 
-  if (pedido.status === "entregue") {
-    return { sucesso: false, status: 400, erro: "Pedido entregue nao pode ser editado." };
+  if (pedido.status !== "recebido") {
+    return {
+      sucesso: false,
+      status: 400,
+      erro: "Pedido só pode ser alterado quando estiver com status 'recebido'.",
+    };
   }
 
   const validacao = validarDadosPedido(cliente, itens);
@@ -122,9 +126,9 @@ function excluirPedido(id) {
     };
   }
 
-  const indicePedido = pedidos.findIndex((item) => item.id === id);
-  pedidos.splice(indicePedido, 1);
-  return { sucesso: true };
+  pedido.status = "cancelado";
+  pedido.atualizadoEm = new Date().toISOString();
+  return { sucesso: true, pedido };
 }
 
 function atualizarStatusPedido(id, novoStatus) {

@@ -182,7 +182,8 @@ describe("BDD - Criacao e consulta de pedidos", () => {
       .get(`/api/pedidos/${pedidoId}`)
       .set("Authorization", `Bearer ${token}`);
 
-    expect(buscaResposta.status).to.equal(404);
+    expect(buscaResposta.status).to.equal(200);
+    expect(buscaResposta.body.status).to.equal("cancelado");
   });
 
   it("CT-PED-013: deve retornar 404 ao editar pedido inexistente", async () => {

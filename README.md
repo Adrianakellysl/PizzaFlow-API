@@ -1,60 +1,44 @@
 # PizzaFlow API
 
-PizzaFlow é uma API REST para gerenciamento de pedidos de uma pizzaria, com foco em
-qualidade de software (QA), validações robustas e testes automatizados.
+PizzaFlow é uma API REST desenvolvida para simular o fluxo de pedidos de uma pizzaria. O sistema oferece funcionalidades de autenticação de usuários e gerenciamento de pedidos, utilizando armazenamento em memória para simplificar a implementação e facilitar testes automatizados.
 
 ## Tecnologias
 
 - Node.js
 - Express
+- JSON Web Token (`jsonwebtoken`)
 - Dotenv (`dotenv`)
-- Mocha + Chai + Supertest (Testes)
-- MongoDB
-- JWT (Autenticação)
-- Mochawesome (relatórios)
+- Mocha
+- Chai
+
+## Novidades do projeto
+
+- Suporte a variáveis de ambiente via arquivo `.env`
+- `JWT_SECRET` e `PORT` agora podem ser configurados sem alterar o código
+- `.env` é ignorado pelo Git por segurança
 
 ## Estrutura do projeto
 
 ```text
 src/
   app.js
-  config/
-    database.js
+  routes/
+    index.js
+    authRoutes.js
+    pedidoRoutes.js
   controllers/
     authController.js
     pedidoController.js
+  services/
+    authService.js
+    pedidoService.js
+  middlewares/
+    authMiddleware.js
   data/
     cardapio.js
     pedidos.js
     statusPedido.js
     usuario.js
-  helpers/
-  middlewares/
-    authMiddleware.js
-  models/
-  routes/
-    index.js
-    authRoutes.js
-    pedidoRoutes.js
-  services/
-    authService.js
-    pedidoService.js
-test/
-  auth.spec.js
-  login.spec.js
-  orders.spec.js
-  pedidos.spec.js
-  status.spec.js
-  setup.js
-mochawesome-report/
-  assets/
-  mochawesome.html
-  mochawesome.json
-.env
-.gitignore
-package.json
-package-lock.json
-README.md
 swagger.json
 ```
 
@@ -80,7 +64,6 @@ cp .env.example .env
 PORT=3000
 JWT_SECRET=seu-segredo-forte
 NODE_ENV=development
-MONGODB_URI=mongodb://127.0.0.1:27017/pizzaflow
 ```
 
 4. Inicie o servidor:
@@ -100,16 +83,6 @@ http://localhost:3000
 - `PORT` - porta em que o servidor escuta (padrão: `3000`)
 - `JWT_SECRET` - segredo usado para assinar tokens JWT
 - `NODE_ENV` - ambiente da aplicação (padrão: `development`)
-
-### Rodar com MongoDB
-
-npm start
-
-### Fallback
-
-Caso o MongoDB não esteja ativo, a API usa memória automaticamente.
-
-------------------------------------------------------------------------
 
 ## Usuário mock para login
 
@@ -248,19 +221,24 @@ Body:
 
 Regras de edição:
 
-- pedido pode ser editado apenas no status `recebido`
+- pedido só pode ser editado quando estiver com status `recebido`
+- pedidos com status `preparando`, `pronto` ou `entregue` retornam `400`
+- mensagem de erro: `Pedido só pode ser alterado quando estiver com status 'recebido'.`
+- a regra de status é validada antes das regras de payload e antes de qualquer alteração no pedido
 - o `total` é sempre recalculado a partir do cardápio
 - o preço enviado no payload é ignorado
 
-### Excluir pedido
+### Excluir/Cancelar pedido
 
 - `DELETE /api/pedidos/:id`
 - Header: `Authorization: Bearer <token>`
 
-Regras de exclusão:
+Regras de exclusão/cancelamento:
 
-- somente pedidos com status `recebido` podem ser excluídos
+- somente pedidos com status `recebido` podem ser cancelados
+- pedidos com status `preparando`, `pronto` ou `entregue` não podem ser cancelados
 - se o pedido não existir, retorna `404`
+- **Nota:** A exclusão agora realiza um "soft delete", alterando o status do pedido para `cancelado` ao invés de removê-lo fisicamente da memória. Ele continuará aparecendo nas listagens de histórico.
 
 ### Buscar pedido por ID
 
@@ -280,7 +258,7 @@ Regras de exclusão:
 
 Resposta:
 
-- `204` quando excluído com sucesso
+- `204` quando cancelado com sucesso (soft delete)
 - `404` quando pedido não existe
 
 ### 6) Buscar pedido por ID
@@ -321,4 +299,7 @@ Para visualizar em interface gráfica:
 1. Abra [Swagger Editor](https://editor.swagger.io/)
 2. Copie o conteúdo de `swagger.json` ou importe a URL local
 
+## Observações
 
+- Como os dados ficam em memória, ao reiniciar o servidor os pedidos são perdidos.
+- O segredo JWT usa `JWT_SECRET` por variável de ambiente (com fallback local para estudo).

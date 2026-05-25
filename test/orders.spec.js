@@ -180,7 +180,48 @@ describe("BDD - Orders", () => {
       expect(resposta.body.total).to.equal(88);
     });
 
-    it("CT-ORD-015: deve retornar 400 ao editar pedido entregue", async () => {
+    it("CT-ORD-015: deve retornar 400 ao editar pedido em preparando", async () => {
+      const pedido = await criarPedido();
+
+      await request(app)
+        .patch(`/api/pedidos/${pedido.body.id}/status`)
+        .set(authHeader(token))
+        .send({ status: "preparando" });
+
+      const resposta = await request(app)
+        .put(`/api/pedidos/${pedido.body.id}`)
+        .set(authHeader(token))
+        .send({ cliente: "Nao Pode", itens: [{ nome: "Pizza Calabresa", quantidade: 1 }] });
+
+      expect(resposta.status).to.equal(400);
+      expect(resposta.body).to.have.property("erro").that.is.a("string").and.not.empty;
+      expect(resposta.body.erro).to.equal("Pedido só pode ser alterado quando estiver com status 'recebido'.");
+    });
+
+    it("CT-ORD-016: deve retornar 400 ao editar pedido em pronto", async () => {
+      const pedido = await criarPedido();
+
+      await request(app)
+        .patch(`/api/pedidos/${pedido.body.id}/status`)
+        .set(authHeader(token))
+        .send({ status: "preparando" });
+
+      await request(app)
+        .patch(`/api/pedidos/${pedido.body.id}/status`)
+        .set(authHeader(token))
+        .send({ status: "pronto" });
+
+      const resposta = await request(app)
+        .put(`/api/pedidos/${pedido.body.id}`)
+        .set(authHeader(token))
+        .send({ cliente: "Nao Pode", itens: [{ nome: "Pizza Calabresa", quantidade: 1 }] });
+
+      expect(resposta.status).to.equal(400);
+      expect(resposta.body).to.have.property("erro").that.is.a("string").and.not.empty;
+      expect(resposta.body.erro).to.equal("Pedido só pode ser alterado quando estiver com status 'recebido'.");
+    });
+
+    it("CT-ORD-017: deve retornar 400 ao editar pedido entregue", async () => {
       const pedido = await criarPedido();
 
       await request(app)
@@ -205,10 +246,28 @@ describe("BDD - Orders", () => {
 
       expect(resposta.status).to.equal(400);
       expect(resposta.body).to.have.property("erro").that.is.a("string").and.not.empty;
-      expect(resposta.body.erro).to.equal("Pedido entregue nao pode ser editado.");
+      expect(resposta.body.erro).to.equal("Pedido só pode ser alterado quando estiver com status 'recebido'.");
     });
 
-    it("CT-ORD-016: deve retornar 400 quando cliente estiver ausente", async () => {
+    it("CT-ORD-018: deve retornar 400 com regra de status antes de validar payload invalido", async () => {
+      const pedido = await criarPedido();
+
+      await request(app)
+        .patch(`/api/pedidos/${pedido.body.id}/status`)
+        .set(authHeader(token))
+        .send({ status: "preparando" });
+
+      const resposta = await request(app)
+        .put(`/api/pedidos/${pedido.body.id}`)
+        .set(authHeader(token))
+        .send({ cliente: "", itens: [] });
+
+      expect(resposta.status).to.equal(400);
+      expect(resposta.body).to.have.property("erro").that.is.a("string").and.not.empty;
+      expect(resposta.body.erro).to.equal("Pedido só pode ser alterado quando estiver com status 'recebido'.");
+    });
+
+    it("CT-ORD-019: deve retornar 400 quando cliente estiver ausente", async () => {
       const pedido = await criarPedido();
 
       const resposta = await request(app)
@@ -221,7 +280,7 @@ describe("BDD - Orders", () => {
       expect(resposta.body.erro).to.equal("Campo cliente e obrigatorio.");
     });
 
-    it("CT-ORD-017: deve retornar 400 quando itens tiverem quantidade invalida", async () => {
+    it("CT-ORD-020: deve retornar 400 quando itens tiverem quantidade invalida", async () => {
       const pedido = await criarPedido();
 
       const resposta = await request(app)
@@ -234,7 +293,7 @@ describe("BDD - Orders", () => {
       expect(resposta.body.erro).to.equal("Cada item deve ter quantidade maior que zero.");
     });
 
-    it("CT-ORD-018: deve retornar 404 ao atualizar pedido inexistente", async () => {
+    it("CT-ORD-021: deve retornar 404 ao atualizar pedido inexistente", async () => {
       const resposta = await request(app)
         .put("/api/pedidos/9999")
         .set(authHeader(token))
@@ -247,7 +306,7 @@ describe("BDD - Orders", () => {
   });
 
   describe("PATCH /api/pedidos/:id/status", () => {
-    it("CT-ORD-019: deve atualizar status de recebido para preparando", async () => {
+    it("CT-ORD-022: deve atualizar status de recebido para preparando", async () => {
       const pedido = await criarPedido();
 
       const resposta = await request(app)
@@ -259,7 +318,7 @@ describe("BDD - Orders", () => {
       expect(resposta.body).to.have.property("status", "preparando");
     });
 
-    it("CT-ORD-020: deve atualizar status de preparando para pronto", async () => {
+    it("CT-ORD-023: deve atualizar status de preparando para pronto", async () => {
       const pedido = await criarPedido();
       await request(app)
         .patch(`/api/pedidos/${pedido.body.id}/status`)
@@ -275,7 +334,7 @@ describe("BDD - Orders", () => {
       expect(resposta.body).to.have.property("status", "pronto");
     });
 
-    it("CT-ORD-021: deve atualizar status de pronto para entregue", async () => {
+    it("CT-ORD-024: deve atualizar status de pronto para entregue", async () => {
       const pedido = await criarPedido();
       await request(app)
         .patch(`/api/pedidos/${pedido.body.id}/status`)
@@ -295,7 +354,7 @@ describe("BDD - Orders", () => {
       expect(resposta.body).to.have.property("status", "entregue");
     });
 
-    it("CT-ORD-022: deve retornar 400 para transicao de status invalida", async () => {
+    it("CT-ORD-025: deve retornar 400 para transicao de status invalida", async () => {
       const pedido = await criarPedido();
 
       const resposta = await request(app)
@@ -308,7 +367,7 @@ describe("BDD - Orders", () => {
       expect(resposta.body.erro).to.equal("Transicao de status invalida. Siga a ordem: recebido -> preparando -> pronto -> entregue.");
     });
 
-    it("CT-ORD-023: deve retornar 400 para status nao reconhecido", async () => {
+    it("CT-ORD-026: deve retornar 400 para status nao reconhecido", async () => {
       const pedido = await criarPedido();
 
       const resposta = await request(app)
@@ -323,7 +382,7 @@ describe("BDD - Orders", () => {
   });
 
   describe("DELETE /api/pedidos/:id", () => {
-    it("CT-ORD-024: deve excluir pedido com status recebido", async () => {
+    it("CT-ORD-027: deve excluir pedido com status recebido", async () => {
       const pedido = await criarPedido();
 
       const respostaDelete = await request(app)
@@ -337,10 +396,11 @@ describe("BDD - Orders", () => {
         .get(`/api/pedidos/${pedido.body.id}`)
         .set(authHeader(token));
 
-      expect(respostaBusca.status).to.equal(404);
+      expect(respostaBusca.status).to.equal(200);
+    expect(respostaBusca.body.status).to.equal("cancelado");
     });
 
-    it("CT-ORD-025: deve retornar 400 ao excluir pedido em preparando", async () => {
+    it("CT-ORD-028: deve retornar 400 ao excluir pedido em preparando", async () => {
       const pedido = await criarPedido();
       await request(app)
         .patch(`/api/pedidos/${pedido.body.id}/status`)
@@ -356,7 +416,7 @@ describe("BDD - Orders", () => {
       expect(resposta.body.erro).to.equal("Somente pedidos com status 'recebido' podem ser excluidos.");
     });
 
-    it("CT-ORD-026: deve retornar 400 ao excluir pedido em entregue", async () => {
+    it("CT-ORD-029: deve retornar 400 ao excluir pedido em entregue", async () => {
       const pedido = await criarPedido();
       await request(app)
         .patch(`/api/pedidos/${pedido.body.id}/status`)
@@ -380,7 +440,7 @@ describe("BDD - Orders", () => {
       expect(resposta.body.erro).to.equal("Somente pedidos com status 'recebido' podem ser excluidos.");
     });
 
-    it("CT-ORD-027: deve retornar 404 ao excluir pedido inexistente", async () => {
+    it("CT-ORD-030: deve retornar 404 ao excluir pedido inexistente", async () => {
       const resposta = await request(app)
         .delete("/api/pedidos/9999")
         .set(authHeader(token));
@@ -390,7 +450,7 @@ describe("BDD - Orders", () => {
       expect(resposta.body.erro).to.equal("Pedido nao encontrado.");
     });
 
-    it("CT-ORD-028: deve retornar 400 ao excluir com ID invalido", async () => {
+    it("CT-ORD-031: deve retornar 400 ao excluir com ID invalido", async () => {
       const resposta = await request(app)
         .delete("/api/pedidos/abc")
         .set(authHeader(token));
