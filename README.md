@@ -221,24 +221,20 @@ Body:
 
 Regras de edição:
 
-- pedido só pode ser editado quando estiver com status `recebido`
-- pedidos com status `preparando`, `pronto` ou `entregue` retornam `400`
-- mensagem de erro: `Pedido só pode ser alterado quando estiver com status 'recebido'.`
-- a regra de status é validada antes das regras de payload e antes de qualquer alteração no pedido
+- pedido pode ser editado em qualquer status, exceto `entregue`
 - o `total` é sempre recalculado a partir do cardápio
 - o preço enviado no payload é ignorado
 
-### Excluir/Cancelar pedido
+### Excluir pedido
 
 - `DELETE /api/pedidos/:id`
 - Header: `Authorization: Bearer <token>`
 
-Regras de exclusão/cancelamento:
+Regras de exclusão:
 
-- somente pedidos com status `recebido` podem ser cancelados
-- pedidos com status `preparando`, `pronto` ou `entregue` não podem ser cancelados
+- somente pedidos com status `recebido` podem ser excluídos
+- pedidos com status `preparando`, `pronto` ou `entregue` não podem ser excluídos
 - se o pedido não existir, retorna `404`
-- **Nota:** A exclusão agora realiza um "soft delete", alterando o status do pedido para `cancelado` ao invés de removê-lo fisicamente da memória. Ele continuará aparecendo nas listagens de histórico.
 
 ### Buscar pedido por ID
 
@@ -258,7 +254,7 @@ Regras de exclusão/cancelamento:
 
 Resposta:
 
-- `204` quando cancelado com sucesso (soft delete)
+- `204` quando excluído com sucesso
 - `404` quando pedido não existe
 
 ### 6) Buscar pedido por ID
