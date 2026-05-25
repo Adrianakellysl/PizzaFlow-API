@@ -1,13 +1,13 @@
 const pedidoService = require("../services/pedidoService");
 const { validarBody, validarPedidoId } = require("../helpers/validators");
 
-function criarPedido(req, res) {
+async function criarPedido(req, res) {
   if (!validarBody(req, res)) {
     return;
   }
 
   const { cliente, itens } = req.body;
-  const resultado = pedidoService.criarPedido(cliente, itens);
+  const resultado = await pedidoService.criarPedido(cliente, itens);
 
   if (!resultado.sucesso) {
     return res.status(resultado.status).json({ erro: resultado.erro });
@@ -16,7 +16,7 @@ function criarPedido(req, res) {
   return res.status(201).json(resultado.pedido);
 }
 
-function atualizarStatus(req, res) {
+async function atualizarStatus(req, res) {
   if (!validarBody(req, res)) {
     return;
   }
@@ -27,7 +27,7 @@ function atualizarStatus(req, res) {
   }
 
   const { status } = req.body;
-  const resultado = pedidoService.atualizarStatusPedido(pedidoId, status);
+  const resultado = await pedidoService.atualizarStatusPedido(pedidoId, status);
 
   if (!resultado.sucesso) {
     return res.status(resultado.status).json({ erro: resultado.erro });
@@ -36,13 +36,13 @@ function atualizarStatus(req, res) {
   return res.status(200).json(resultado.pedido);
 }
 
-function buscarPedido(req, res) {
+async function buscarPedido(req, res) {
   const pedidoId = validarPedidoId(req, res);
   if (pedidoId === null) {
     return;
   }
 
-  const pedido = pedidoService.buscarPedidoPorId(pedidoId);
+  const pedido = await pedidoService.buscarPedidoPorId(pedidoId);
   if (!pedido) {
     return res.status(404).json({ erro: "Pedido nao encontrado." });
   }
@@ -50,12 +50,12 @@ function buscarPedido(req, res) {
   return res.status(200).json(pedido);
 }
 
-function listarPedidos(req, res) {
-  const lista = pedidoService.listarPedidos();
+async function listarPedidos(req, res) {
+  const lista = await pedidoService.listarPedidos();
   return res.status(200).json(lista);
 }
 
-function atualizarPedido(req, res) {
+async function atualizarPedido(req, res) {
   if (!validarBody(req, res)) {
     return;
   }
@@ -66,7 +66,7 @@ function atualizarPedido(req, res) {
   }
 
   const { cliente, itens } = req.body;
-  const resultado = pedidoService.atualizarPedido(pedidoId, cliente, itens);
+  const resultado = await pedidoService.atualizarPedido(pedidoId, cliente, itens);
 
   if (!resultado.sucesso) {
     return res.status(resultado.status).json({ erro: resultado.erro });
@@ -75,13 +75,13 @@ function atualizarPedido(req, res) {
   return res.status(200).json(resultado.pedido);
 }
 
-function excluirPedido(req, res) {
+async function excluirPedido(req, res) {
   const pedidoId = validarPedidoId(req, res);
   if (pedidoId === null) {
     return;
   }
 
-  const resultado = pedidoService.excluirPedido(pedidoId);
+  const resultado = await pedidoService.excluirPedido(pedidoId);
   if (!resultado.sucesso) {
     return res.status(resultado.status).json({ erro: resultado.erro });
   }

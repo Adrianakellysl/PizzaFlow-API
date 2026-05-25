@@ -5,7 +5,7 @@ describe("BDD - Orders", () => {
   let token;
 
   beforeEach(async () => {
-    resetarEstadoDeTeste();
+    await resetarEstadoDeTeste();
     token = await obterTokenValido();
   });
 

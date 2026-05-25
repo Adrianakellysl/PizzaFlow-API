@@ -6,7 +6,7 @@ describe("BDD - Criacao e consulta de pedidos", () => {
   let pedidoId;
 
   beforeEach(async () => {
-    resetarEstadoDeTeste();
+    await resetarEstadoDeTeste();
     token = await obterTokenValido();
     
     // Cria um pedido padrão para testes que necessitam de um pedido já existente

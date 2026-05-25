@@ -6,6 +6,7 @@ PizzaFlow é uma API REST desenvolvida para simular o fluxo de pedidos de uma pi
 
 - Node.js
 - Express
+- MongoDB & Mongoose
 - JSON Web Token (`jsonwebtoken`)
 - Dotenv (`dotenv`)
 - Mocha
@@ -13,8 +14,9 @@ PizzaFlow é uma API REST desenvolvida para simular o fluxo de pedidos de uma pi
 
 ## Novidades do projeto
 
+- Suporte a persistência no banco de dados MongoDB
 - Suporte a variáveis de ambiente via arquivo `.env`
-- `JWT_SECRET` e `PORT` agora podem ser configurados sem alterar o código
+- `JWT_SECRET`, `PORT` e `MONGODB_URI` agora podem ser configurados sem alterar o código
 - `.env` é ignorado pelo Git por segurança
 
 ## Estrutura do projeto
@@ -83,6 +85,7 @@ http://localhost:3000
 - `PORT` - porta em que o servidor escuta (padrão: `3000`)
 - `JWT_SECRET` - segredo usado para assinar tokens JWT
 - `NODE_ENV` - ambiente da aplicação (padrão: `development`)
+- `MONGODB_URI` - URI de conexão do MongoDB (ex: `mongodb://127.0.0.1:27017/pizzaflow`). Caso não informada, a API usará o fallback de armazenamento em memória.
 
 ## Usuário mock para login
 
@@ -200,7 +203,7 @@ Restrições de status:
 
 - não pode pular etapas
 - não pode voltar para etapa anterior
-- não pode alterar pedido com status `entregue`
+- Só pode alterar pedido com status `recebido`
 
 ### Editar pedido
 
@@ -221,7 +224,7 @@ Body:
 
 Regras de edição:
 
-- pedido pode ser editado em qualquer status, exceto `entregue`
+- pedido pode ser editado somente no status `recebido`
 - o `total` é sempre recalculado a partir do cardápio
 - o preço enviado no payload é ignorado
 
@@ -297,5 +300,5 @@ Para visualizar em interface gráfica:
 
 ## Observações
 
-- Como os dados ficam em memória, ao reiniciar o servidor os pedidos são perdidos.
+- Os pedidos são salvos no banco de dados MongoDB quando a variável `MONGODB_URI` está configurada. Caso contrário, a API utiliza armazenamento temporário em memória (onde ao reiniciar o servidor os pedidos são perdidos).
 - O segredo JWT usa `JWT_SECRET` por variável de ambiente (com fallback local para estudo).

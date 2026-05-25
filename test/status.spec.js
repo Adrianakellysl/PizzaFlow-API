@@ -26,7 +26,7 @@ describe("BDD - Atualizacao de status do pedido", () => {
   }
 
   beforeEach(async () => {
-    resetarEstadoDeTeste();
+    await resetarEstadoDeTeste();
     token = await obterTokenValido();
   });
 

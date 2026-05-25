@@ -2,8 +2,8 @@ const { expect } = require("chai");
 const { request, app, resetarEstadoDeTeste } = require("./setup");
 
 describe("BDD - Autenticacao na API", () => {
-  beforeEach(() => {
-    resetarEstadoDeTeste();
+  beforeEach(async () => {
+    await resetarEstadoDeTeste();
   });
 
   it("CT-LOGIN-001: deve retornar 200 e token ao realizar login com credenciais válidas", async () => {

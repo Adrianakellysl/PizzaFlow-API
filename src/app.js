@@ -5,9 +5,12 @@ const cors = require("cors");
 const routes = require("./routes");
 const swaggerDocument = require("../swagger.json");
 const packageInfo = require("../package.json");
+const { connectDatabase } = require("./config/database");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+connectDatabase();
 
 // Habilita CORS para permitir requisições de outras origens (ex: editor.swagger.io)
 app.use(cors());

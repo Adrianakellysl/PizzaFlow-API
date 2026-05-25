@@ -2,8 +2,8 @@ const { expect } = require("chai");
 const { request, app, resetarEstadoDeTeste } = require("./setup");
 
 describe("BDD - Autorização por token JWT", () => {
-  beforeEach(() => {
-    resetarEstadoDeTeste();
+  beforeEach(async () => {
+    await resetarEstadoDeTeste();
   });
 
   it("CT-AUTH-001: deve retornar 401 quando acessar rota protegida sem token", async () => {

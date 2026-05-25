@@ -11,28 +11,28 @@ const itemSchema = new mongoose.Schema(
 );
 
 const pedidoSchema = new mongoose.Schema(
-  {
-    id: { type: Number, required: true, unique: true, index: true },
+   {
+    _id: { type: Number },
     cliente: { type: String, required: true, trim: true },
+
     itens: { type: [itemSchema], required: true },
+
     total: { type: Number, required: true, min: 0 },
+
     status: {
       type: String,
-      enum: ["recebido", "preparando", "pronto", "entregue"],
+      enum: ["recebido", "preparando", "pronto", "entregue", "cancelado"],
       default: "recebido",
       required: true,
     },
-    criadoEm: { type: String, required: true },
-    atualizadoEm: { type: String },
-  },
-  { timestamps: true, versionKey: false }
-);
 
-pedidoSchema.set("toJSON", {
-  transform: (_doc, ret) => {
-    delete ret._id;
-    return ret;
+    criadoEm: { type: Date, required: true },
+
+    atualizadoEm: { type: Date },
   },
+  {
+    timestamps: true,
+    versionKey: false,
 });
 
 module.exports = mongoose.model("Pedido", pedidoSchema);

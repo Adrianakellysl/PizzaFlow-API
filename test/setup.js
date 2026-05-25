@@ -25,9 +25,17 @@ function postPedido(token, payload = pedidoPadrao) {
   return request(app).post("/api/pedidos").set(authHeader(token)).send(payload);
 }
 
-function resetarEstadoDeTeste() {
-  pedidoService.resetarDadosPedidos();
+async function resetarEstadoDeTeste() {
+  await pedidoService.resetarDadosPedidos();
 }
+
+after(async () => {
+  const { isDatabaseConfigured } = require("../src/config/database");
+  if (isDatabaseConfigured()) {
+    const mongoose = require("mongoose");
+    await mongoose.connection.close();
+  }
+});
 
 module.exports = {
   request,
