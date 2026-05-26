@@ -4,13 +4,20 @@ PizzaFlow é uma API REST desenvolvida para simular o fluxo de pedidos de uma pi
 
 ## Tecnologias
 
+### Backend
 - Node.js
 - Express
 - MongoDB & Mongoose
 - JSON Web Token (`jsonwebtoken`)
 - Dotenv (`dotenv`)
+
+### Testes
 - Mocha
 - Chai
+
+### Deploy e Infraestrutura
+- Render
+- MongoDB Atlas
 
 ## Novidades do projeto
 
@@ -297,6 +304,12 @@ Para visualizar em interface gráfica:
 
 1. Abra [Swagger Editor](https://editor.swagger.io/)
 2. Copie o conteúdo de `swagger.json` ou importe a URL local
+
+## API Online
+
+API publicada no Render:
+
+🔗 https://pizzaflow-api-w8yf.onrender.com
 
 ## Observações
 
