@@ -31,7 +31,7 @@ const pedidoSchema = new mongoose.Schema(
     atualizadoEm: { type: Date },
   },
   {
-    timestamps: true,
+
     versionKey: false,
 });
 

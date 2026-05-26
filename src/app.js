@@ -7,6 +7,7 @@ const swaggerDocument = require("../swagger.json");
 const packageInfo = require("../package.json");
 const { connectDatabase } = require("./config/database");
 
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
