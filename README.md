@@ -57,6 +57,26 @@ src/
     usuario.js
 swagger.json
 ```
+## Banco de Dados
+
+A aplicação suporta dois modos de armazenamento:
+
+### MongoDB Atlas (Recomendado)
+
+Configure a variável de ambiente:
+
+```env
+MONGO_URL=sua-string-de-conexao-do-mongodb-atlas
+```
+
+Neste modo os dados são persistidos no banco de dados.
+
+### Armazenamento em Memória
+
+Caso a variável `MONGO_URL` não seja configurada, a aplicação utilizará armazenamento em memória.
+
+> Neste modo os dados são perdidos ao reiniciar o servidor.
+```
 
 ## Como executar
 
@@ -100,6 +120,8 @@ http://localhost:3000
 - `JWT_SECRET` - segredo usado para assinar tokens JWT
 - `NODE_ENV` - ambiente da aplicação (padrão: `development`)
 - `MONGODB_URI` - URI de conexão do MongoDB (ex: `mongodb://127.0.0.1:27017/pizzaflow`). Caso não informada, a API usará o fallback de armazenamento em memória.
+- `MONGO_URL` / `MONGO_URI` - aliases aceitos para compatibilidade.
+
 
 ## Usuário mock para login
 
