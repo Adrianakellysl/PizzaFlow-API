@@ -1,15 +1,20 @@
 # PizzaFlow API
 
-PizzaFlow é uma API REST desenvolvida para simular o fluxo de pedidos de uma pizzaria. O sistema oferece funcionalidades de autenticação de usuários e gerenciamento de pedidos, utilizando armazenamento em memória para simplificar a implementação e facilitar testes automatizados.
+PizzaFlow é uma API REST desenvolvida para simular o fluxo de pedidos de uma pizzaria. O projeto possui autenticação via JWT, gerenciamento completo de pedidos e persistência de dados utilizando MongoDB Atlas.
+
+A aplicação foi criada com foco em estudos de testes de API, validação de regras de negócio e automação de testes, servindo como ambiente prático para aplicação de conceitos de Quality Assurance (QA).
+
+---
 
 ## Tecnologias
 
 ### Backend
 - Node.js
 - Express
-- MongoDB & Mongoose
-- JSON Web Token (`jsonwebtoken`)
-- Dotenv (`dotenv`)
+- MongoDB Atlas
+- Mongoose
+- JSON Web Token (JWT)
+- Dotenv
 
 ### Testes
 - Mocha
@@ -21,7 +26,9 @@ PizzaFlow é uma API REST desenvolvida para simular o fluxo de pedidos de uma pi
 
 ## Novidades do projeto
 
-- Suporte a persistência no banco de dados MongoDB
+- Persistência de dados utilizando MongoDB Atlas
+- Deploy automatizado na Render
+- Autenticação baseada em JWT
 - Suporte a variáveis de ambiente via arquivo `.env`
 - `JWT_SECRET`, `PORT` e `MONGODB_URI` agora podem ser configurados sem alterar o código
 - `.env` é ignorado pelo Git por segurança
@@ -313,5 +320,7 @@ API publicada no Render:
 
 ## Observações
 
-- Os pedidos são salvos no banco de dados MongoDB quando a variável `MONGODB_URI` está configurada. Caso contrário, a API utiliza armazenamento temporário em memória (onde ao reiniciar o servidor os pedidos são perdidos).
-- O segredo JWT usa `JWT_SECRET` por variável de ambiente (com fallback local para estudo).
+- Os dados são persistidos no MongoDB Atlas.
+- A autenticação utiliza JWT.
+- Configurações sensíveis são gerenciadas por variáveis de ambiente.
+- O projeto foi desenvolvido como ambiente de prática para testes funcionais e automação de testes.
