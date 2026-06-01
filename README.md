@@ -342,7 +342,7 @@ API publicada no Render:
 
 ## Observações
 
-- Os dados são persistidos no MongoDB Atlas.
-- A autenticação utiliza JWT.
+- Os dados são salvos no banco de dados MongoDB quando a variável `MONGODB_URI` está configurada. Caso contrário, a API utiliza armazenamento temporário em memória (onde ao reiniciar o servidor os pedidos são perdidos).
+- O segredo JWT usa `JWT_SECRET` por variável de ambiente (com fallback local para estudo).
 - Configurações sensíveis são gerenciadas por variáveis de ambiente.
 - O projeto foi desenvolvido como ambiente de prática para testes funcionais e automação de testes.
